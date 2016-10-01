@@ -1,10 +1,10 @@
 from neoEval import Card, Evaluator, Deck
 from neoPS import PokerStars
 import time
-import os
 
 __version__ = '0.1'
 __author__ = 'AneoPsy'
+
 
 class NeoOdds (object):
 
@@ -27,19 +27,19 @@ class NeoOdds (object):
         self.my_percentage = 100 * (1.0 - self.evaluator.get_five_card_rank_percentage(self.my_score))
         return self.my_score, self.my_class, self.my_percentage
 
-    def setup(self, n_gen, nbr_player, cards):
+    def setup(self, n_gen, nbr_player, cards, n_board):
         boards = []
         hands = []
 
         for i in range(n_gen):
             self.deck.remove(cards[0])
             self.deck.remove(cards[1])
-            if len(cards[1]) == 4:
+            if len(cards[1]) == (n_board - 1):
                 a = list(cards[1])
                 a.append(self.deck.draw())
                 boards.append(a)
             else:
-                boards.append(cards[1] + self.deck.draw(5 - len(cards[1])))
+                boards.append(cards[1] + self.deck.draw(n_board - len(cards[1])))
             hands.append([])
             hands[i].append(cards[0])
             for x in range(nbr_player):
@@ -55,18 +55,20 @@ class NeoOdds (object):
                     print(o.string)
                     break
 
-    def equity(self, n_gen, nbr_player):
+    def equity(self, n_gen, n_board):
 
-        boards = self.setup(n_gen, nbr_player, self.cards)
+        boards, c = self.setup(n_gen, self.pokerstars.nbrPlayers - 1, self.cards, n_board)
         percentage = 0
         if not self.cards:
             return "No Hand Found!"
         for i in range(len(boards)):
-            percentage += (1.0 - self.evaluator.get_five_card_rank_percentage(self.evaluator.evaluate(boards[i], self.cards[0])))
+            percentage += (1.0 - self.evaluator.get_five_card_rank_percentage(self.evaluator.evaluate(boards[i],
+                                                                                                      self.cards[0])))
 
         return (percentage / n_gen) * 100
 
-    def card_converter(self, cards):
+    @staticmethod
+    def card_converter(cards):
         r_cards = []
         cards = [x for x in cards if x is not None]
         for i in cards:
@@ -81,7 +83,7 @@ class NeoOdds (object):
 
     def odds(self, nbr_gen, nbr_player):
         self.get_poker_cards()
-        boards, hands = self.setup(nbr_gen, nbr_player - 1, self.cards)
+        boards, hands = self.setup(nbr_gen, nbr_player - 1, self.cards, 5)
         flop = 0
         turn = 0
         river = 0
@@ -115,14 +117,10 @@ if __name__ == '__main__':
             print(' Board: ')
             Card.print_pretty_cards(neo.cards[1])
         if neo.cards[0]:
-            #print("Equity flop: " + str(neo.equity(1000, 6)))
-            #print("Equity turn: " + str(neo.equity(1000, 6)))
-            #print("Equity river: " + str(neo.equity(1000, 6)))
-            #print()
-            a, b, c = neo.odds(1000, 6)
-            print("Odds flop: " + str(a))
-            print("Odds turn: " + str(b))
-            print("Odds river: " + str(c))
+            a, b, c = neo.odds(1000, neo.pokerstars.nbrPlayers)
+            print("Odds flop: " + str(round(a, 2)) + " | " + str(neo.equity(1000, 3)))
+            print("Odds turn: " + str(round(b, 2)) + " | " + str(neo.equity(1000, 4)))
+            print("Odds river: " + str(round(c, 2)) + " | " + str(neo.equity(1000, 5)))
         if len(neo.cards[0]) == 2 and len(neo.cards[1]) >= 3:
             a, b, c = neo.evaluate()
             print("Player 1 hand rank = %d (%s) %f" % (a, b, c))

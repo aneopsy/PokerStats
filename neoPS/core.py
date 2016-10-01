@@ -46,11 +46,11 @@ class PokerStars(object):
                 self.action = line.split('\'')[1]
             if 'maxTablePlayers' in line:
                 self.maxTablePlayers = int(line.split('=')[1])
-            if 'dealerPos' in line:
-                self.dealerFlag != self.dealerFlag
-                self.nbrPlayers = self.nbrPlayersTmp
+            if 'dealerPos=' in line:
+                if self.nbrPlayersTmp != 0:
+                    self.nbrPlayers = self.nbrPlayersTmp
                 self.nbrPlayersTmp = 0
-            if 'sit' in line and self.dealerFlag:
+            if 'sit' in line:
                 self.nbrPlayersTmp += 1
 
     def get_log(self):
