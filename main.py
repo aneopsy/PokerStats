@@ -1,128 +1,99 @@
-from neoEval import Card, Evaluator, Deck
-from neoPS import PokerStars
+import sys
+import os
 import time
 
-__version__ = '0.1'
-__author__ = 'AneoPsy'
+from neoEval import Card, Evaluator, Deck
+from neoPS import PokerStars
 
+from PyQt5 import QtGui
+from PyQt5 import QtCore
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QThread
 
-class NeoOdds (object):
+from UI.gui import Ui_MainWindow
+from neoOdds import NeoOdds
+from GUI.BatchAddUrls import BatchAddDialogue
+from GUI.LicenseDialog import LicenseDialogue
+from GUI.AboutDialog import AboutDialog
 
-    def __init__(self, file_path):
-        self.file_path = file_path
+# Setting custom variables
+desktop_path = os.path.join(os.path.expanduser('~'), "Desktop")
+try:
+    app_root = os.path.dirname(os.path.abspath(__file__))
+except NameError:
+    import sys
+    app_root = os.path.dirname(os.path.abspath(sys.argv[0]))
 
-        self.evaluator = Evaluator()
-        self.deck = Deck()
-        self.pokerstars = PokerStars(self.file_path)
+class getPostsThread(QThread):
 
-        self.file = self.pokerstars.get_log()
-        self.cards = []
-        self.my_class = None
-        self.my_score = None
-        self.my_percentage = 0
+    def __init__(self, cal, gui):
+        QThread.__init__(self)
+        self.cal = cal
+        self.gui = gui
 
-    def evaluate(self):
-        self.my_score = self.evaluator.evaluate(self.cards[1], self.cards[0])
-        self.my_class = self.evaluator.class_to_string(self.evaluator.get_rank_class(self.my_score))
-        self.my_percentage = 100 * (1.0 - self.evaluator.get_five_card_rank_percentage(self.my_score))
-        return self.my_score, self.my_class, self.my_percentage
+    def __del__(self):
+        self.wait()
 
-    def setup(self, n_gen, nbr_player, cards, n_board):
-        boards = []
-        hands = []
+    def run(self):
+        while True:
+            self.cal.get_poker_cards()
+            self.cal.pokerstars.get_info()
+            self.gui.ui.labelPlayerNumber.setText("Player: " + str(self.cal.pokerstars.nbrPlayers))
+            if self.cal.cards[0]:
+                print('Hand: ')
+                Card.print_pretty_cards(self.cal.cards[0])
+            if self.cal.cards[1]:
+                print(' Board: ')
+                Card.print_pretty_cards(self.cal.cards[1])
+            if len(self.cal.cards[0]) >= 2:
+                a, b, c = self.cal.odds(1000, self.cal.pokerstars.nbrPlayers)
+                self.gui.ui.progressBar.setValue(self.cal.equity(1000, 3))
+                self.gui.ui.progressBar_2.setValue(self.cal.equity(1000, 4))
+                self.gui.ui.progressBar_6.setValue(self.cal.equity(1000, 5))
 
-        for i in range(n_gen):
-            self.deck.remove(cards[0])
-            self.deck.remove(cards[1])
-            if len(cards[1]) == (n_board - 1):
-                a = list(cards[1])
-                a.append(self.deck.draw())
-                boards.append(a)
-            else:
-                boards.append(cards[1] + self.deck.draw(n_board - len(cards[1])))
-            hands.append([])
-            hands[i].append(cards[0])
-            for x in range(nbr_player):
-                hands[i].append(self.deck.draw(2))
-            self.deck.shuffle()
+                self.gui.ui.progressBar_3.setValue(int(a))
+                self.gui.ui.progressBar_4.setValue(int(b))
+                self.gui.ui.progressBar_5.setValue(int(c))
+            if len(self.cal.cards[0]) == 2 and len(self.cal.cards[1]) >= 3:
+                a, b, c = self.cal.evaluate()
+                self.gui.ui.labelInfo.setText("Player 1 hand rank = %d (%s) %f" % (a, b, c))
+            self.sleep(0.1)
 
-        return boards, hands
+class MainWindow(QtWidgets.QMainWindow):
+    def __init__(self, parent=None):
+        QtWidgets.QMainWindow.__init__(self, parent)
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        path = os.path.join(app_root, 'UI', 'images', 'icon.png')
+        self.setWindowIcon(QtGui.QIcon(path))
+        self.batch_dialog = BatchAddDialogue(self)
+        self.ui.lineEditSrc.setText("C:\\Users\\theis_p\\AppData\\Local\\PokerStars.FR\\PokerStars.log.0")
+        self.set_connections()
+        self.url_list = []
+        self.complete_url_list = {}
+        self.convert_list = []
+        self.thread_pool = {}
+        self.rowcount = 0
+        self.show()
+        self.cal = NeoOdds()
 
-    def check(self):
-        for rm in neo.pokerstars.get_my_card():
-            for i, o in enumerate(self.deck.cards):
-                if o.string == rm.string:
-                    print(o.string)
-                    break
+    def set_connections(self):
+        self.ui.btnStart.clicked.connect(self.handleButton)
+        # self.ui.browse_btn.clicked.connect(self.set_destination)
+        # self.ui.BatchAdd.clicked.connect(self.batch_file)
+        # self.ui.BrowseConvertButton.clicked.connect(self.convert_file_browse)
+        # self.ui.ConvertMultipleButton.clicked.connect(self.convert_button)
+        # self.ui.BrowseConvertToButton.clicked.connect(self.browse_convert_destination)
 
-    def equity(self, n_gen, n_board):
+    def handleButton(self):
+        self.src = str(self.ui.lineEditSrc.text())
+        self.ui.labelInfo.setText("Start on :" + self.src)
+        self.cal.config(self.src)
+        self.get_thread = getPostsThread(self.cal, self)
+        self.get_thread.start()
 
-        boards, c = self.setup(n_gen, self.pokerstars.nbrPlayers - 1, self.cards, n_board)
-        percentage = 0
-        if not self.cards:
-            return "No Hand Found!"
-        for i in range(len(boards)):
-            percentage += (1.0 - self.evaluator.get_five_card_rank_percentage(self.evaluator.evaluate(boards[i],
-                                                                                                      self.cards[0])))
-
-        return (percentage / n_gen) * 100
-
-    @staticmethod
-    def card_converter(cards):
-        r_cards = []
-        cards = [x for x in cards if x is not None]
-        for i in cards:
-            r_cards.append(Card(i))
-        return r_cards
-
-    def get_poker_cards(self):
-        self.cards = []
-        self.cards.append(self.card_converter(self.pokerstars.get_my_card()))
-        self.cards.append(self.card_converter(self.pokerstars.get_player_card()))
-        return self.cards
-
-    def odds(self, nbr_gen, nbr_player):
-        self.get_poker_cards()
-        boards, hands = self.setup(nbr_gen, nbr_player - 1, self.cards, 5)
-        flop = 0
-        turn = 0
-        river = 0
-
-        for i in range(len(boards)):
-            a, b, c = self.evaluator.hand_equity(boards[i], hands[i])
-            for i in a:
-                if i == 0:
-                    flop += 1
-            for i in b:
-                if i == 0:
-                    turn += 1
-            for i in c:
-                if i == 0:
-                    river += 1
-
-        return flop / nbr_gen * 100, turn / nbr_gen * 100, river / nbr_gen * 100
-
-if __name__ == '__main__':
-    src = "C:\\Users\\theis_p\\AppData\\Local\\PokerStars.FR\\PokerStars.log.0"
-    neo = NeoOdds(src)
-    while True:
-        neo.get_poker_cards()
-        neo.pokerstars.get_info()
-        # os.system('cls' if os.name == 'nt' else 'clear')
-        print('Player: ' + str(neo.pokerstars.nbrPlayers))
-        if neo.cards[0]:
-            print('Hand: ')
-            Card.print_pretty_cards(neo.cards[0])
-        if neo.cards[1]:
-            print(' Board: ')
-            Card.print_pretty_cards(neo.cards[1])
-        if neo.cards[0]:
-            a, b, c = neo.odds(1000, neo.pokerstars.nbrPlayers)
-            print("Odds flop: " + str(round(a, 2)) + " | " + str(neo.equity(1000, 3)))
-            print("Odds turn: " + str(round(b, 2)) + " | " + str(neo.equity(1000, 4)))
-            print("Odds river: " + str(round(c, 2)) + " | " + str(neo.equity(1000, 5)))
-        if len(neo.cards[0]) == 2 and len(neo.cards[1]) >= 3:
-            a, b, c = neo.evaluate()
-            print("Player 1 hand rank = %d (%s) %f" % (a, b, c))
-        time.sleep(1)
-    
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    myapp = MainWindow()
+    myapp.show()
+    sys.exit(app.exec_())

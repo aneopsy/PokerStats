@@ -215,3 +215,4 @@ class Card(object):
                 output += Card.int_to_pretty_str(c) + " "
     
         print(output)
+        return output
