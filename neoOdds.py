@@ -82,6 +82,10 @@ class NeoOdds (object):
         self.cards.append(self.card_converter(self.pokerstars.get_player_card()))
         return self.cards
 
+    def calculate(self):
+        self.p_score = self.eval.evaluate(self.cards[1], self.cards[0])
+        self.p_class = self.eval.get_rank_class(self.p_score)
+
     def odds(self, nbr_gen, nbr_player):
         self.get_poker_cards()
         boards, hands = self.setup(nbr_gen, nbr_player - 1, self.cards, 5)

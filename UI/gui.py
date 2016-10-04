@@ -7,12 +7,11 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import resource_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(394, 613)
+        MainWindow.resize(394, 675)
         MainWindow.setStyleSheet("QToolTip\n"
 "{\n"
 "     border: 1px solid black;\n"
@@ -174,7 +173,7 @@ class Ui_MainWindow(object):
 "\n"
 "QGroupBox\n"
 "{\n"
-"background-color:#282C34;\n"
+"background-color: #21252B;\n"
 "}\n"
 "\n"
 "QGroupBox:focus\n"
@@ -482,6 +481,9 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.verticalLayoutTitle = QtWidgets.QVBoxLayout()
+        self.verticalLayoutTitle.setObjectName("verticalLayoutTitle")
+        self.verticalLayout_2.addLayout(self.verticalLayoutTitle)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
@@ -502,21 +504,35 @@ class Ui_MainWindow(object):
         self.groupBoxInfo = QtWidgets.QGroupBox(self.centralwidget)
         self.groupBoxInfo.setMinimumSize(QtCore.QSize(0, 120))
         self.groupBoxInfo.setObjectName("groupBoxInfo")
-        self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.groupBoxInfo)
-        self.verticalLayout_7.setObjectName("verticalLayout_7")
-        self.gridLayoutHandCard = QtWidgets.QGridLayout()
-        self.gridLayoutHandCard.setObjectName("gridLayoutHandCard")
-        self.verticalLayout_7.addLayout(self.gridLayoutHandCard)
-        self.gridLayoutBoardCard = QtWidgets.QGridLayout()
-        self.gridLayoutBoardCard.setObjectName("gridLayoutBoardCard")
-        self.verticalLayout_7.addLayout(self.gridLayoutBoardCard)
+        self.gridLayout_4 = QtWidgets.QGridLayout(self.groupBoxInfo)
+        self.gridLayout_4.setObjectName("gridLayout_4")
         self.labelPlayerNumber = QtWidgets.QLabel(self.groupBoxInfo)
         self.labelPlayerNumber.setObjectName("labelPlayerNumber")
-        self.verticalLayout_7.addWidget(self.labelPlayerNumber)
+        self.gridLayout_4.addWidget(self.labelPlayerNumber, 2, 0, 1, 1)
+        self.lcdNumberPlayer = QtWidgets.QLCDNumber(self.groupBoxInfo)
+        self.lcdNumberPlayer.setDigitCount(2)
+        self.lcdNumberPlayer.setSegmentStyle(QtWidgets.QLCDNumber.Flat)
+        self.lcdNumberPlayer.setObjectName("lcdNumberPlayer")
+        self.gridLayout_4.addWidget(self.lcdNumberPlayer, 2, 1, 1, 1)
+        self.labelHandCard = QtWidgets.QLabel(self.groupBoxInfo)
+        self.labelHandCard.setText("")
+        self.labelHandCard.setAlignment(QtCore.Qt.AlignCenter)
+        self.labelHandCard.setObjectName("labelHandCard")
+        self.gridLayout_4.addWidget(self.labelHandCard, 0, 0, 1, 1)
+        self.labelBoardCard = QtWidgets.QLabel(self.groupBoxInfo)
+        self.labelBoardCard.setText("")
+        self.labelBoardCard.setAlignment(QtCore.Qt.AlignCenter)
+        self.labelBoardCard.setObjectName("labelBoardCard")
+        self.gridLayout_4.addWidget(self.labelBoardCard, 0, 1, 1, 1)
+        self.labelCombi = QtWidgets.QLabel(self.groupBoxInfo)
+        self.labelCombi.setText("")
+        self.labelCombi.setAlignment(QtCore.Qt.AlignCenter)
+        self.labelCombi.setObjectName("labelCombi")
+        self.gridLayout_4.addWidget(self.labelCombi, 1, 0, 1, 2)
         self.verticalLayout.addWidget(self.groupBoxInfo)
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
         self.tabWidget.setStyleSheet("QTabWidget::pane { /* The tab widget frame */\n"
-"     border-top: 1px solid #C2C7CB;\n"
+"     border-top: 3px solid #FFFFFF;\n"
 "     position: absolute;\n"
 "     top: -0.5em;\n"
 "     background: white;\n"
@@ -524,29 +540,6 @@ class Ui_MainWindow(object):
 "\n"
 " QTabWidget::tab-bar {\n"
 "     alignment: center;\n"
-" }\n"
-"\n"
-" /* Style the tab using the tab sub-control. Note that\n"
-"     it reads QTabBar _not_ QTabWidget */\n"
-" QTabBar::tab {\n"
-"     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-"                                 stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,\n"
-"                                 stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);\n"
-"     border: 1px solid #C4C4C3;\n"
-"     border-bottom-color: #C2C7CB; /* same as the pane color */\n"
-"     min-width: 8ex;\n"
-"     padding: 3px 15px;\n"
-" }\n"
-"\n"
-" QTabBar::tab:selected, QTabBar::tab:hover {\n"
-"     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-"                                 stop: 0 #fafafa, stop: 0.4 #f4f4f4,\n"
-"                                 stop: 0.5 #e7e7e7, stop: 1.0 #fafafa);\n"
-" }\n"
-"\n"
-" QTabBar::tab:selected {\n"
-"     border-color:#C4C4C3;\n"
-"\n"
 " }")
         self.tabWidget.setTabPosition(QtWidgets.QTabWidget.North)
         self.tabWidget.setDocumentMode(False)
@@ -576,18 +569,18 @@ class Ui_MainWindow(object):
         self.labelEquityTurn.setObjectName("labelEquityTurn")
         self.gridLayout_2.addWidget(self.labelEquityTurn, 1, 0, 1, 1)
         self.progressBar = QtWidgets.QProgressBar(self.groupBoxEquity)
-        self.progressBar.setProperty("value", 24)
+        self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName("progressBar")
         self.gridLayout_2.addWidget(self.progressBar, 0, 1, 1, 1)
         self.progressBar_2 = QtWidgets.QProgressBar(self.groupBoxEquity)
-        self.progressBar_2.setProperty("value", 24)
+        self.progressBar_2.setProperty("value", 0)
         self.progressBar_2.setObjectName("progressBar_2")
         self.gridLayout_2.addWidget(self.progressBar_2, 1, 1, 1, 1)
         self.labelEquityRiver = QtWidgets.QLabel(self.groupBoxEquity)
         self.labelEquityRiver.setObjectName("labelEquityRiver")
         self.gridLayout_2.addWidget(self.labelEquityRiver, 2, 0, 1, 1)
         self.progressBar_6 = QtWidgets.QProgressBar(self.groupBoxEquity)
-        self.progressBar_6.setProperty("value", 24)
+        self.progressBar_6.setProperty("value", 0)
         self.progressBar_6.setObjectName("progressBar_6")
         self.gridLayout_2.addWidget(self.progressBar_6, 2, 1, 1, 1)
         self.verticalLayout_8.addLayout(self.gridLayout_2)
@@ -608,25 +601,31 @@ class Ui_MainWindow(object):
         self.labelOddsFlop.setObjectName("labelOddsFlop")
         self.gridLayout_3.addWidget(self.labelOddsFlop, 0, 0, 1, 1)
         self.progressBar_3 = QtWidgets.QProgressBar(self.groupBoxOdds)
-        self.progressBar_3.setProperty("value", 24)
+        self.progressBar_3.setProperty("value", 0)
         self.progressBar_3.setObjectName("progressBar_3")
         self.gridLayout_3.addWidget(self.progressBar_3, 0, 2, 1, 1)
         self.labelOddsTurn = QtWidgets.QLabel(self.groupBoxOdds)
         self.labelOddsTurn.setObjectName("labelOddsTurn")
         self.gridLayout_3.addWidget(self.labelOddsTurn, 1, 0, 1, 1)
         self.progressBar_4 = QtWidgets.QProgressBar(self.groupBoxOdds)
-        self.progressBar_4.setProperty("value", 24)
+        self.progressBar_4.setProperty("value", 0)
         self.progressBar_4.setObjectName("progressBar_4")
         self.gridLayout_3.addWidget(self.progressBar_4, 1, 2, 1, 1)
         self.progressBar_5 = QtWidgets.QProgressBar(self.groupBoxOdds)
-        self.progressBar_5.setProperty("value", 24)
+        self.progressBar_5.setProperty("value", 0)
         self.progressBar_5.setObjectName("progressBar_5")
         self.gridLayout_3.addWidget(self.progressBar_5, 2, 2, 1, 1)
         self.verticalLayout_10.addLayout(self.gridLayout_3)
         self.verticalLayout_4.addWidget(self.groupBoxOdds)
         spacerItem5 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_4.addItem(spacerItem5)
+        self.progressBarLoop = QtWidgets.QProgressBar(self.StatsTab)
+        self.progressBarLoop.setProperty("value", 0)
+        self.progressBarLoop.setInvertedAppearance(False)
+        self.progressBarLoop.setObjectName("progressBarLoop")
+        self.verticalLayout_4.addWidget(self.progressBarLoop)
         self.labelInfo = QtWidgets.QLabel(self.StatsTab)
+        self.labelInfo.setMaximumSize(QtCore.QSize(395, 16777215))
         self.labelInfo.setAlignment(QtCore.Qt.AlignCenter)
         self.labelInfo.setObjectName("labelInfo")
         self.verticalLayout_4.addWidget(self.labelInfo)
@@ -666,6 +665,15 @@ class Ui_MainWindow(object):
         self.horizontalLayout_6.setSpacing(6)
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
         self.gridLayout.addLayout(self.horizontalLayout_6, 2, 1, 1, 1)
+        self.spinBox = QtWidgets.QSpinBox(self.ConfigTab)
+        self.spinBox.setMinimum(100)
+        self.spinBox.setMaximum(50000)
+        self.spinBox.setProperty("value", 1000)
+        self.spinBox.setObjectName("spinBox")
+        self.gridLayout.addWidget(self.spinBox, 1, 1, 1, 1)
+        self.label = QtWidgets.QLabel(self.ConfigTab)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 1, 0, 1, 1)
         self.verticalLayout_11.addLayout(self.gridLayout)
         spacerItem8 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_11.addItem(spacerItem8)
@@ -675,45 +683,6 @@ class Ui_MainWindow(object):
         self.btnApply.setObjectName("btnApply")
         self.verticalLayout_11.addWidget(self.btnApply)
         self.tabWidget.addTab(self.ConfigTab, "")
-        self.ActivityTab = QtWidgets.QWidget()
-        self.ActivityTab.setObjectName("ActivityTab")
-        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.ActivityTab)
-        self.verticalLayout_6.setObjectName("verticalLayout_6")
-        self.verticalLayout_5 = QtWidgets.QVBoxLayout()
-        self.verticalLayout_5.setObjectName("verticalLayout_5")
-        self.tableWidget = QtWidgets.QTableWidget(self.ActivityTab)
-        self.tableWidget.setFocusPolicy(QtCore.Qt.WheelFocus)
-        self.tableWidget.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        self.tableWidget.setStatusTip("")
-        self.tableWidget.setAutoFillBackground(False)
-        self.tableWidget.setStyleSheet("")
-        self.tableWidget.setFrameShape(QtWidgets.QFrame.VLine)
-        self.tableWidget.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.tableWidget.setAlternatingRowColors(False)
-        self.tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.tableWidget.setGridStyle(QtCore.Qt.NoPen)
-        self.tableWidget.setRowCount(0)
-        self.tableWidget.setColumnCount(5)
-        self.tableWidget.setObjectName("tableWidget")
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(2, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(3, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(4, item)
-        self.tableWidget.verticalHeader().setVisible(False)
-        self.tableWidget.verticalHeader().setDefaultSectionSize(30)
-        self.tableWidget.verticalHeader().setMinimumSectionSize(20)
-        self.tableWidget.verticalHeader().setSortIndicatorShown(False)
-        self.verticalLayout_5.addWidget(self.tableWidget)
-        self.verticalLayout_6.addLayout(self.verticalLayout_5)
-        self.tabWidget.addTab(self.ActivityTab, "")
         self.verticalLayout.addWidget(self.tabWidget)
         self.verticalLayout_2.addLayout(self.verticalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -729,17 +698,19 @@ class Ui_MainWindow(object):
         self.actionAbout.setObjectName("actionAbout")
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Poker Stats v0.1b"))
         self.groupBoxInfo.setTitle(_translate("MainWindow", "information"))
-        self.labelPlayerNumber.setText(_translate("MainWindow", "NbrPlayers"))
+        self.labelPlayerNumber.setText(_translate("MainWindow", "Player:"))
         self.groupBoxEquity.setTitle(_translate("MainWindow", "Equity Calculator"))
         self.labelEquityFlop.setText(_translate("MainWindow", "Flop:"))
         self.labelEquityTurn.setText(_translate("MainWindow", "Turn:"))
+        self.progressBar.setFormat(_translate("MainWindow", "%p%"))
+        self.progressBar_2.setFormat(_translate("MainWindow", "%p%"))
         self.labelEquityRiver.setText(_translate("MainWindow", "River:"))
         self.groupBoxOdds.setTitle(_translate("MainWindow", "Odds Calculator"))
         self.labelOddsRiver.setText(_translate("MainWindow", "River:"))
@@ -750,24 +721,13 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.StatsTab), _translate("MainWindow", "Stats"))
         self.labelSrc.setText(_translate("MainWindow", "Select a file:"))
         self.btnSrc.setText(_translate("MainWindow", "Browse"))
+        self.label.setText(_translate("MainWindow", "Generation"))
         self.btnApply.setText(_translate("MainWindow", "Convert"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.ConfigTab), _translate("MainWindow", "Config"))
-        self.tableWidget.setSortingEnabled(False)
-        item = self.tableWidget.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "Video/Song"))
-        item = self.tableWidget.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "Size"))
-        item = self.tableWidget.horizontalHeaderItem(2)
-        item.setText(_translate("MainWindow", "ETA"))
-        item = self.tableWidget.horizontalHeaderItem(3)
-        item.setText(_translate("MainWindow", "Speed"))
-        item = self.tableWidget.horizontalHeaderItem(4)
-        item.setText(_translate("MainWindow", "Status"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.ActivityTab), _translate("MainWindow", "Activity"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
         self.actionHelp.setText(_translate("MainWindow", "About"))
         self.actionLicense.setText(_translate("MainWindow", "License"))
         self.actionOptions.setText(_translate("MainWindow", "Options"))
         self.actionAbout.setText(_translate("MainWindow", "About"))
 
-
+from .resource_rc import *

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>394</width>
-    <height>613</height>
+    <height>675</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -175,7 +175,7 @@ QComboBox::down-arrow
 
 QGroupBox
 {
-background-color:#282C34;
+background-color: #21252B;
 }
 
 QGroupBox:focus
@@ -483,6 +483,9 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
+     <layout class="QVBoxLayout" name="verticalLayoutTitle"/>
+    </item>
+    <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
@@ -550,17 +553,51 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
         <property name="title">
          <string>information</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_7">
-         <item>
-          <layout class="QGridLayout" name="gridLayoutHandCard"/>
-         </item>
-         <item>
-          <layout class="QGridLayout" name="gridLayoutBoardCard"/>
-         </item>
-         <item>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="2" column="0">
           <widget class="QLabel" name="labelPlayerNumber">
            <property name="text">
-            <string>NbrPlayers</string>
+            <string>Player:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLCDNumber" name="lcdNumberPlayer">
+           <property name="digitCount">
+            <number>2</number>
+           </property>
+           <property name="segmentStyle">
+            <enum>QLCDNumber::Flat</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="labelHandCard">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="labelBoardCard">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QLabel" name="labelCombi">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -571,7 +608,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
        <widget class="QTabWidget" name="tabWidget">
         <property name="styleSheet">
          <string notr="true">QTabWidget::pane { /* The tab widget frame */
-     border-top: 1px solid #C2C7CB;
+     border-top: 3px solid #FFFFFF;
      position: absolute;
      top: -0.5em;
 	 background: white;
@@ -579,29 +616,6 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
 
  QTabWidget::tab-bar {
      alignment: center;
- }
-
- /* Style the tab using the tab sub-control. Note that
-     it reads QTabBar _not_ QTabWidget */
- QTabBar::tab {
-     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                 stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
-                                 stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
-     border: 1px solid #C4C4C3;
-     border-bottom-color: #C2C7CB; /* same as the pane color */
-     min-width: 8ex;
-     padding: 3px 15px;
- }
-
- QTabBar::tab:selected, QTabBar::tab:hover {
-     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                 stop: 0 #fafafa, stop: 0.4 #f4f4f4,
-                                 stop: 0.5 #e7e7e7, stop: 1.0 #fafafa);
- }
-
- QTabBar::tab:selected {
-     border-color:#C4C4C3;
-
  }</string>
         </property>
         <property name="tabPosition">
@@ -677,14 +691,20 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
                  <item row="0" column="1">
                   <widget class="QProgressBar" name="progressBar">
                    <property name="value">
-                    <number>24</number>
+                    <number>0</number>
+                   </property>
+                   <property name="format">
+                    <string>%p%</string>
                    </property>
                   </widget>
                  </item>
                  <item row="1" column="1">
                   <widget class="QProgressBar" name="progressBar_2">
                    <property name="value">
-                    <number>24</number>
+                    <number>0</number>
+                   </property>
+                   <property name="format">
+                    <string>%p%</string>
                    </property>
                   </widget>
                  </item>
@@ -698,7 +718,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
                  <item row="2" column="1">
                   <widget class="QProgressBar" name="progressBar_6">
                    <property name="value">
-                    <number>24</number>
+                    <number>0</number>
                    </property>
                   </widget>
                  </item>
@@ -747,7 +767,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
                <item row="0" column="2">
                 <widget class="QProgressBar" name="progressBar_3">
                  <property name="value">
-                  <number>24</number>
+                  <number>0</number>
                  </property>
                 </widget>
                </item>
@@ -761,14 +781,14 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
                <item row="1" column="2">
                 <widget class="QProgressBar" name="progressBar_4">
                  <property name="value">
-                  <number>24</number>
+                  <number>0</number>
                  </property>
                 </widget>
                </item>
                <item row="2" column="2">
                 <widget class="QProgressBar" name="progressBar_5">
                  <property name="value">
-                  <number>24</number>
+                  <number>0</number>
                  </property>
                 </widget>
                </item>
@@ -791,7 +811,23 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
            </spacer>
           </item>
           <item>
+           <widget class="QProgressBar" name="progressBarLoop">
+            <property name="value">
+             <number>0</number>
+            </property>
+            <property name="invertedAppearance">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QLabel" name="labelInfo">
+            <property name="maximumSize">
+             <size>
+              <width>395</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string>info</string>
             </property>
@@ -894,6 +930,26 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
               </property>
              </layout>
             </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="spinBox">
+              <property name="minimum">
+               <number>100</number>
+              </property>
+              <property name="maximum">
+               <number>50000</number>
+              </property>
+              <property name="value">
+               <number>1000</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Generation</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
           <item>
@@ -924,103 +980,6 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
              <bool>false</bool>
             </property>
            </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="ActivityTab">
-         <attribute name="title">
-          <string>Activity</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_5">
-            <item>
-             <widget class="QTableWidget" name="tableWidget">
-              <property name="focusPolicy">
-               <enum>Qt::WheelFocus</enum>
-              </property>
-              <property name="contextMenuPolicy">
-               <enum>Qt::ActionsContextMenu</enum>
-              </property>
-              <property name="statusTip">
-               <string notr="true"/>
-              </property>
-              <property name="autoFillBackground">
-               <bool>false</bool>
-              </property>
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::VLine</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Sunken</enum>
-              </property>
-              <property name="editTriggers">
-               <set>QAbstractItemView::NoEditTriggers</set>
-              </property>
-              <property name="alternatingRowColors">
-               <bool>false</bool>
-              </property>
-              <property name="selectionMode">
-               <enum>QAbstractItemView::ExtendedSelection</enum>
-              </property>
-              <property name="selectionBehavior">
-               <enum>QAbstractItemView::SelectRows</enum>
-              </property>
-              <property name="gridStyle">
-               <enum>Qt::NoPen</enum>
-              </property>
-              <property name="sortingEnabled">
-               <bool>false</bool>
-              </property>
-              <property name="rowCount">
-               <number>0</number>
-              </property>
-              <property name="columnCount">
-               <number>5</number>
-              </property>
-              <attribute name="verticalHeaderVisible">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="verticalHeaderDefaultSectionSize">
-               <number>30</number>
-              </attribute>
-              <attribute name="verticalHeaderMinimumSectionSize">
-               <number>20</number>
-              </attribute>
-              <attribute name="verticalHeaderShowSortIndicator" stdset="0">
-               <bool>false</bool>
-              </attribute>
-              <column>
-               <property name="text">
-                <string>Video/Song</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Size</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>ETA</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Speed</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Status</string>
-               </property>
-              </column>
-             </widget>
-            </item>
-           </layout>
           </item>
          </layout>
         </widget>
