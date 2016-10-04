@@ -1,8 +1,13 @@
 <img src="resources/logo.png" align="right" />
 # PokerStats [![Poker](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://www.pokerstars.com/)
-> A curated list of awesome README
+> "Luck doesn't exist" doesn't mean "Everything is under your control" but it's only Probabilities
 
 PokerStats awesome Statistic for Texas Hold'em
+
+### Prerequisities
+
+- pyQt5
+- Python3
 
 
 ## Examples
