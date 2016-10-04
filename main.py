@@ -12,9 +12,6 @@ from PyQt5.QtCore import QThread
 
 from UI.gui import Ui_MainWindow
 from neoOdds import NeoOdds
-from GUI.BatchAddUrls import BatchAddDialogue
-from GUI.LicenseDialog import LicenseDialogue
-from GUI.AboutDialog import AboutDialog
 
 # Setting custom variables
 desktop_path = os.path.join(os.path.expanduser('~'), "Desktop")
@@ -192,7 +189,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.verticalLayoutTitle.addWidget(self.m_titleBar)
         path = os.path.join(app_root, 'UI', 'images', 'icon.png')
         self.setWindowIcon(QtGui.QIcon(path))
-        self.batch_dialog = BatchAddDialogue(self)
         self.ui.lineEditSrc.setText("C:\\Users\\theis_p\\AppData\\Local\\PokerStars.FR\\PokerStars.log.0")
         self.set_connections()
         self.url_list = []
