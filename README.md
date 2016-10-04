@@ -1,8 +1,8 @@
 <img src="resources/logo.png" align="right" />
-# PokerStats [![Poker](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
+# PokerStats [![Poker](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://www.pokerstars.com/)
 > A curated list of awesome README
 
-Elements in beautiful READMEs include, but not limited to: images, screenshots, GIFs, text formatting, etc.
+PokerStats awesome Statistic for Texas Hold'em
 
 
 ## Examples
@@ -17,12 +17,8 @@ Elements in beautiful READMEs include, but not limited to: images, screenshots, 
 - [node-chat](https://github.com/IgorAntun/node-chat) - Project screenshot. Informative badges. Clear description. Easy installation/use instructions. Live demo.
 - [b4b4r07/dotfiles](https://github.com/b4b4r07/dotfiles) - Testing my dotfiles repo on OS X to get my work environment ready in just a few moments. #VIM + #ZSH + #TMUX = Best Developer Environment.
 
-## Articles
-- ["How To Write A Readme"](http://jfhbrook.github.io/2011/11/09/readmes.html) - *Joshua Holbrook*
-- ["How To Write A Great README"](https://robots.thoughtbot.com/how-to-write-a-great-readme) - *Caleb Thompson (thoughtbot)*
-- ["Readme Driven Development"](http://tom.preston-werner.com/2010/08/23/readme-driven-development.html) - *Tom Preston-Werner*
-- ["Top ten reasons why I won’t use your open source project"](https://changelog.com/top-ten-reasons-why-i-wont-use-your-open-source-project/) - *Adam Stacoviak*
-
+## Author
+AneoPsy
 
 ## Contribute
 
