@@ -1,16 +1,14 @@
 import sys
 import os
-import time
+import configparser
 
 from neoEval import Card, Evaluator, Deck
 from neoPS import PokerStars
 
-from PyQt5 import QtGui
-from PyQt5 import QtCore
-from PyQt5 import QtWidgets
 from PyQt5.QtCore import QThread
 
 from UI.gui import Ui_MainWindow
+from UI.titleBar import TitleBar
 from neoOdds import NeoOdds
 
 # Setting custom variables
@@ -25,102 +23,9 @@ import sys
 from PyQt5 import QtGui
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
 
-class TitleBar(QtWidgets.QDialog):
-    def __init__(self, parent=None, windowTitle='Window Title'):
-        QtWidgets.QWidget.__init__(self, parent)
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        css = """
-        QWidget{
-            Background: #3C424E;
-            color:white;
-            font:15px bold;
-            font-weight:bold;
-            border-radius: 1px;
-            height: 11px;
-        }
-        QDialog{
-            Background-image:url('img/titlebar bg.png');
-            font-size:15px;
-            color: black;
-        }
-        QToolButton{
-            font-size:11px;
-        }
-        QToolButton:hover{
-            Background: #FF00FF;
-            font-size:11px;
-        }
-        """
-        self.setAutoFillBackground(True)
-        self.setBackgroundRole(QtGui.QPalette.Highlight)
-        self.setStyleSheet(css)
-        self.minimize = QtWidgets.QToolButton(self)
-        self.minimize.setIcon(QtGui.QIcon('img/min.png'))
-        self.minimize.setStyleSheet("""
-        QToolButton{
-            Background:#AAAA20;
-            font-size:11px;
-        }""")
-        self.maximize = QtWidgets.QToolButton(self)
-        self.maximize.setIcon(QtGui.QIcon('img/max.png'))
-        self.maximize.setStyleSheet("""
-        QToolButton{
-            Background:#20AA20;
-            font-size:11px;
-        }""")
-        close = QtWidgets.QToolButton(self)
-        close.setIcon(QtGui.QIcon('img/close.png'))
-        close.setStyleSheet("""
-        QToolButton{
-            Background:#AA2020;
-            font-size:11px;
-        }""")
-        self.minimize.setMinimumHeight(10)
-        close.setMinimumHeight(10)
-        self.maximize.setMinimumHeight(10)
-        label = QtWidgets.QLabel(self)
-        label.setText(windowTitle)
-        self.setWindowTitle(windowTitle)
-        hbox = QtWidgets.QHBoxLayout(self)
-        hbox.addWidget(label)
-        hbox.addWidget(self.minimize)
-        hbox.addWidget(self.maximize)
-        hbox.addWidget(close)
-        hbox.insertStretch(1, 500)
-        hbox.setSpacing(3)
-        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                           QtWidgets.QSizePolicy.Fixed)
-        self.maxNormal = False
-        close.clicked.connect(self.close)
-        self.minimize.clicked.connect(self.showSmall)
-        self.maximize.clicked.connect(self.showMaxRestore)
+from PyQt5.QtCore import *
 
-    def showSmall(self):
-        box.showMinimized()
-
-    def showMaxRestore(self):
-        if(self.maxNormal):
-            box.showNormal()
-            self.maxNormal = False
-            self.maximize.setIcon(QtGui.QIcon('img/max.png'))
-        else:
-            box.showMaximized()
-            self.maxNormal = True
-            self.maximize.setIcon(QtGui.QIcon('img/max2.png'))
-
-    def close(self):
-        box.close()
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            box.moving = True
-            box.offset = event.pos()
-
-    def mouseMoveEvent(self, event):
-        if box.moving:
-            box.move(event.globalPos()-box.offset)
 
 class LoopThread(QThread):
 
@@ -184,12 +89,15 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self, parent, flags=QtCore.Qt.FramelessWindowHint)
         self.m_titleBar = TitleBar(self, "PokerStats")
         self.m_content = QtWidgets.QWidget(self)
+        self.size = []
+        self.size.append(380)
+        self.size.append(HEIGHT - 38)
+        self.move((WIDTH - self.size[0]), 0)
         self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
+        self.ui.setupUi(self, self.size)
         self.ui.verticalLayoutTitle.addWidget(self.m_titleBar)
         path = os.path.join(app_root, 'UI', 'images', 'icon.png')
         self.setWindowIcon(QtGui.QIcon(path))
-        self.ui.lineEditSrc.setText("C:\\Users\\theis_p\\AppData\\Local\\PokerStars.FR\\PokerStars.log.0")
         self.set_connections()
         self.url_list = []
         self.complete_url_list = {}
@@ -200,19 +108,31 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cal = NeoOdds()
         self.loopthread = LoopThread(self.cal, self)
         self.buttonStart = False
+        defaults = {'path': 'C:\\Users\\theis_p\\AppData\\Local\\PokerStars.FR\\PokerStars.log.0', 'result': '2000'}
+        self.config = configparser.SafeConfigParser(defaults=defaults)
+        self.loadIni()
+
+        for i in range(200):
+            self.ui.listWidgetHistory.addItem(str(i))
 
     def set_connections(self):
         self.ui.btnStart.clicked.connect(self.handleButton)
-        # self.ui.browse_btn.clicked.connect(self.set_destination)
+        self.ui.btnApply.clicked.connect(self.saveIni)
+        self.ui.btnSrc.clicked.connect(self.set_destination)
         # self.ui.BatchAdd.clicked.connect(self.batch_file)
         # self.ui.BrowseConvertButton.clicked.connect(self.convert_file_browse)
         # self.ui.ConvertMultipleButton.clicked.connect(self.convert_button)
         # self.ui.BrowseConvertToButton.clicked.connect(self.browse_convert_destination)
 
+    def set_destination(self):
+        file_name = str(QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory"))
+        if file_name is not '':
+            self.ui.lineEditSrc.setText(file_name)
+
     def handleButton(self):
         if not self.buttonStart:
             self.src = str(self.ui.lineEditSrc.text())
-            self.ui.labelInfo.setText("Start on :" + self.src)
+            self.ui.labelInfo.setText(self.src)
             self.cal.config(self.src)
             self.onThread()
             self.buttonStart = True
@@ -290,9 +210,25 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.labelBoardCard.setText('')
         self.ui.labelHandCard.setText('')
         self.ui.lcdNumberPlayer.display(0)
+        self.cards = []
+
+    def loadIni(self):
+        self.config.read('pokerstats.ini')
+        if not self.config.has_section('config'):
+            self.config.add_section('config')
+        self.ui.lineEditSrc.setText(self.config.get('config', 'path'))
+        self.ui.spinBox.setValue(int(self.config.get('config', 'result')))
+
+    def saveIni(self):
+        self.config.set('config', 'path', str(self.ui.lineEditSrc.text()))
+        self.config.set('config', 'result', str(self.ui.spinBox.value()))
+        with open('pokerstats.ini', 'w') as configfile:
+            self.config.write(configfile)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
+    screen_rect = app.desktop().screenGeometry()
+    WIDTH, HEIGHT = screen_rect.width(), screen_rect.height()
     box = MainWindow()
     box.show()
     sys.exit(app.exec_())

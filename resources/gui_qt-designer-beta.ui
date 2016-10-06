@@ -554,13 +554,6 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
          <string>information</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="2" column="0">
-          <widget class="QLabel" name="labelPlayerNumber">
-           <property name="text">
-            <string>Player:</string>
-           </property>
-          </widget>
-         </item>
          <item row="2" column="1">
           <widget class="QLCDNumber" name="lcdNumberPlayer">
            <property name="digitCount">
@@ -578,6 +571,13 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="labelPlayerNumber">
+           <property name="text">
+            <string>Player:</string>
            </property>
           </widget>
          </item>
@@ -622,7 +622,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
          <enum>QTabWidget::North</enum>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>2</number>
         </property>
         <property name="documentMode">
          <bool>false</bool>
@@ -821,6 +821,19 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
            </widget>
           </item>
           <item>
+           <spacer name="verticalSpacer_7">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
            <widget class="QLabel" name="labelInfo">
             <property name="maximumSize">
              <size>
@@ -835,19 +848,6 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
              <set>Qt::AlignCenter</set>
             </property>
            </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_7">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
           </item>
           <item>
            <widget class="QPushButton" name="btnStart">
@@ -928,6 +928,38 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
               <property name="spacing">
                <number>6</number>
               </property>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <item>
+                 <widget class="QLabel" name="labelPosX">
+                  <property name="text">
+                   <string>Position X:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="spinBoxPosX">
+                  <property name="maximum">
+                   <number>1000</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelPosY">
+                  <property name="text">
+                   <string>Position Y:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="spinBoxPosY">
+                  <property name="maximum">
+                   <number>1000</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
              </layout>
             </item>
             <item row="1" column="1">
@@ -949,6 +981,52 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
                <string>Generation</string>
               </property>
              </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="labelScreenPos">
+              <property name="text">
+               <string>Screen Pos:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="labelFrameSize">
+              <property name="text">
+               <string>Frame Size:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QLabel" name="labelSizeX">
+                <property name="text">
+                 <string>Size X:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="spinBoxSizeX">
+                <property name="maximum">
+                 <number>500</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="labelSizeY">
+                <property name="text">
+                 <string>Size Y:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="spinBoxSizeY">
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
@@ -974,12 +1052,26 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
              </size>
             </property>
             <property name="text">
-             <string>Convert</string>
+             <string>Apply</string>
             </property>
             <property name="autoDefault">
              <bool>false</bool>
             </property>
            </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab">
+         <attribute name="title">
+          <string>History</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="0" column="0">
+             <widget class="QListWidget" name="listWidgetHistory"/>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>

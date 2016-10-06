@@ -17,7 +17,7 @@ setup(
     options = {'py2exe': {'compressed': True,"includes":["sip"]}},
     windows = [{
                    'script': "main.py",
-                   "icon_resources": [(0, os.path.join(os.getcwd(),"resources","converted_icon.ico"))],
+                   "icon_resources": [(1, os.path.join(os.getcwd(),"resources","converted_icon.ico"))],
                    "dest_base":"PokerStats",
                }],
     zipfile = None,
