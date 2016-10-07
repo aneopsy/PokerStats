@@ -1,4 +1,4 @@
-from neoEval import Card, Evaluator, Deck
+from neoEval import Card, Evaluator, Deck, MonteCarlo
 from neoPS import PokerStars
 
 __version__ = '0.1'
@@ -10,6 +10,7 @@ class NeoOdds (object):
     def __init__(self):
         self.evaluator = Evaluator()
         self.deck = Deck()
+        self.mc = MonteCarlo()
         self.file = None
         self.cards = []
         self.my_class = None
@@ -20,7 +21,7 @@ class NeoOdds (object):
         if file_path is not None:
             self.file_path = file_path
             self.pokerstars = PokerStars(self.file_path)
-            self.file = self.pokerstars.get_log()
+            self.pokerstars.start()
 
     def evaluate(self):
         self.my_score = self.evaluator.evaluate(self.cards[1], self.cards[0])
@@ -49,13 +50,6 @@ class NeoOdds (object):
 
         return boards, hands
 
-    def check(self):
-        for rm in neo.pokerstars.get_my_card():
-            for i, o in enumerate(self.deck.cards):
-                if o.string == rm.string:
-                    print(o.string)
-                    break
-
     def equity(self, n_gen, n_board):
 
         boards, c = self.setup(n_gen, self.pokerstars.nbrPlayers - 1, self.cards, n_board)
@@ -78,8 +72,8 @@ class NeoOdds (object):
 
     def get_poker_cards(self):
         self.cards = []
-        self.cards.append(self.card_converter(self.pokerstars.get_my_card()))
-        self.cards.append(self.card_converter(self.pokerstars.get_player_card()))
+        self.cards.append(self.card_converter(self.pokerstars.handCardList))
+        self.cards.append(self.card_converter(self.pokerstars.boardCardList))
         return self.cards
 
     def calculate(self):
@@ -104,5 +98,5 @@ class NeoOdds (object):
             for i in c:
                 if i == 0:
                     river += 1
-
         return flop / nbr_gen * 100, turn / nbr_gen * 100, river / nbr_gen * 100
+

@@ -5,12 +5,15 @@ Runs a Montecarlo simulation to calculate the probability of winning with a cert
 import time
 import numpy as np
 from collections import Counter
-from copy import copy
+
+from .deck import Deck
+from .card import Card
 
 
 class MonteCarlo(object):
+
     def eval_best_hand(self, hands):  # evaluate which hand is best
-        scores = [(i, self.calc_score(hand)) for i, hand in enumerate(hands)]
+        scores = [(i, self.calc_score(Deck.convert_card_to_string(hand))) for i, hand in enumerate(hands)]
         winner = sorted(scores, key=lambda x: x[1], reverse=True)[0][0]
         return hands[winner], scores[winner][1][-1]
 
@@ -112,107 +115,52 @@ class MonteCarlo(object):
 
         return score, card_ranks, hand_type
 
-    def create_card_deck(self):
-        values = "23456789TJQKA"
-        suites = "cdhs"
-        Deck = []
-        [Deck.append(x + y) for x in values for y in suites]
-        return Deck
-
-    def distribute_cards_to_players(self, deck, player_amount, player_card_list, table_card_list):
-        Players = []
-        CardsOnTable = []
-        knownPlayers = 0  # for potential collusion if more than one bot is running on the same table
-
-        for player_cards in player_card_list:
-            first_player = []
-            first_player.append(deck.pop(deck.index(player_cards[0])))
-            first_player.append(deck.pop(deck.index(player_cards[1])))
-            Players.append(first_player)
-
-            knownPlayers += 1  # my own cards are known
-
-        for c in table_card_list:
-            CardsOnTable.append(deck.pop(deck.index(c)))  # remove cards that are on the table from the deck
-
-        for n in range(0, player_amount - knownPlayers):
-            plr = []
-            plr.append(deck.pop(np.random.randint(0, len(deck) - 1)))
-            plr.append(deck.pop(np.random.randint(0, len(deck) - 1)))
-            Players.append(plr)
-
-        return Players, deck
-
-    def distribute_cards_to_table(self, Deck, table_card_list, board_nbr_card):
-        remaningRandoms = board_nbr_card - len(table_card_list)
-        for n in range(0, remaningRandoms):
-            table_card_list.append(Deck.pop(np.random.randint(0, len(Deck) - 1)))
-
-        return table_card_list
-
-    def run_montecarlo(self, original_player_card_list, original_table_card_list, player_amount, board_nbr_card, ui, maxRuns,
-                       timeout):
-        winnerCardTypeList = []
+    def run_montecarlo(self, original_player_card_list, original_table_card_list, player_amount,
+                       board_nbr_card, maxRuns, timeout):
+        winner_card_type_list = list()
         wins = 0
         runs = 0
-        OriginalDeck = self.create_card_deck()
+        deck = Deck()
+        start_time = time.time()
+        card_to_add = board_nbr_card - len(original_table_card_list)
         for m in range(maxRuns):
             runs += 1
+            deck.shuffle()
+            deck.remove(original_player_card_list)
+            deck.remove(original_table_card_list)
 
-            Deck = copy(OriginalDeck)
-            PlayerCardList = original_player_card_list[:]
-            TableCardsList = original_table_card_list[:]
-            Players, Deck = self.distribute_cards_to_players(Deck, player_amount, PlayerCardList, TableCardsList)
-            Deck5Cards = self.distribute_cards_to_table(Deck, TableCardsList, board_nbr_card)
-            PlayerFinalCardsWithTableCards = []
-            for o in range(0, player_amount):
-                PlayerFinalCardsWithTableCards.append(Players[o] + Deck5Cards)
+            board = list(original_table_card_list)
+            board += deck.draw(card_to_add)
 
-            bestHand, winnerCardType = self.eval_best_hand(PlayerFinalCardsWithTableCards)
-            winner = (PlayerFinalCardsWithTableCards.index(bestHand))
-            # print(winnerCardType)
+            players = list()
+            players.append(original_player_card_list)
+            for n in range(0, player_amount - 1):
+                players.append(deck.draw(2))
+
+            final_cards = list()
+            for hand in players:
+                final_cards.append(hand + board)
+            best_hand, winner_card_type = self.eval_best_hand(final_cards)
+            winner = (final_cards.index(best_hand))
+
 
             CollusionPlayers = 0
             if winner < CollusionPlayers + 1:
                 wins += 1
-                winnerCardTypeList.append(winnerCardType)
-                # winnerlist.append(winner)
-                # self.equity=wins/m
-                # if self.equity>0.99: self.equity=0.99
-                # EquityList.append(self.equity)
-
-            self.equity = np.round(wins / runs, 3)
+                winner_card_type_list.append(winner_card_type)
 
             try:
                 if m % 1000 == 0:
-                    # if gui.active == True:
-                    #     gui.progress["value"] = int(round(m * 100 / maxRuns))
-                    #     gui.var2.set("Equity: " + str(self.equity * 100) + "%")
-                    #     gui.statusbar.set("Running Monte Carlo: " + str(m) + "/" + str(maxRuns))
-                        if m > 999 and time.time() - start_time > timeout:
-                            break
+                    if m > 999 and time.time() - start_time > timeout:
+                        break
             except:
                 pass
 
-
         self.equity = wins / runs
-        self.winnerCardTypeList = Counter(winnerCardTypeList)
+        self.winnerCardTypeList = Counter(winner_card_type_list)
         for key, value in self.winnerCardTypeList.items():
             self.winnerCardTypeList[key] = value / runs
-
         self.winTypesDict = self.winnerCardTypeList.items()
         self.runs = runs
 
         return self.equity, self.winTypesDict
-
-
-if __name__ == '__main__':
-    Simulation = MonteCarlo()
-    my_cards = [['7s', '2c']]
-    cards_on_table = []
-    players = 10
-    start_time = time.time()
-    Simulation.run_montecarlo(my_cards, cards_on_table, players, 3, 1, maxRuns=15000, timeout=5)
-    print("--- %s seconds ---" % (time.time() - start_time))
-    equity = Simulation.equity  # considering draws as wins
-    print("Equity: " + str(equity * 100) + "%")

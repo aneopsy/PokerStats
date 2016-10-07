@@ -2,7 +2,7 @@ import sys
 import os
 import configparser
 
-from neoEval import Card, Evaluator, Deck
+from neoEval import Card, MonteCarlo, Evaluator, Deck
 from neoPS import PokerStars
 
 from PyQt5.QtCore import QThread
@@ -36,6 +36,9 @@ class LoopThread(QThread):
     notifyEquityFlop = QtCore.pyqtSignal(int)
     notifyEquityTurn = QtCore.pyqtSignal(int)
     notifyEquityRiver = QtCore.pyqtSignal(int)
+    notifyOddsFlopP = QtCore.pyqtSignal(float)
+    notifyOddsTurnP = QtCore.pyqtSignal(float)
+    notifyOddsRiverP = QtCore.pyqtSignal(float)
 
     def __init__(self, cal, gui):
         QThread.__init__(self)
@@ -49,45 +52,60 @@ class LoopThread(QThread):
     def stop(self):
         self.terminate()
 
+    def reset_ui(self):
+        self.gui.ui.labelCombi.setText("???")
+        self.gui.ui.labelInfo.setText("???")
+
     def run(self):
+        n, a, b, c = 0, 0, 0, 0
         while True:
+            n += 1
             self.cal.get_poker_cards()
-            self.cal.pokerstars.get_info()
+            if self.cal.pokerstars.up:
+                a, b, c, n = 0, 0, 0, 0
             self.gui.ui.lcdNumberPlayer.display(self.cal.pokerstars.nbrPlayers)
             if self.cal.cards[0]:
                 self.gui.ui.labelHandCard.setText(Card.print_pretty_cards(self.cal.cards[0]))
             if self.cal.cards[1]:
                 self.gui.ui.labelBoardCard.setText(Card.print_pretty_cards(self.cal.cards[1]))
+            self.notifyProgress.emit(10)
             if len(self.cal.cards[0]) >= 2:
-                a, b, c = self.cal.odds(self.gui.ui.spinBox.value(), self.cal.pokerstars.nbrPlayers)
+                a1, b1, c1 = self.cal.odds(self.gui.ui.spinBox.value(), self.cal.pokerstars.nbrPlayers)
+                a += a1
+                b += b1
+                c += c1
                 if len(self.cal.cards[1]) <= 3:
-                    self.notifyOddsFlop.emit(int(a))
-                    self.notifyEquityFlop.emit(self.cal.equity(self.gui.ui.spinBox.value(), 3))
+                    self.notifyOddsFlop.emit(int(a / n))
+                    self.notifyProgress.emit(20)
+                    self.notifyOddsFlopP.emit(float(a / n))
                 else:
                     self.notifyOddsFlop.emit(0)
-                    self.notifyEquityFlop.emit(0)
                 if len(self.cal.cards[1]) <= 4:
-                    self.notifyOddsTurn.emit(int(b))
-                    self.notifyEquityTurn.emit(self.cal.equity(self.gui.ui.spinBox.value(), 4))
+                    self.notifyOddsTurn.emit(int(b / n))
+                    self.notifyProgress.emit(50)
+                    self.notifyOddsTurnP.emit(float(b / n))
                 else:
                     self.notifyOddsTurn.emit(0)
-                    self.notifyEquityTurn.emit(0)
-                self.notifyOddsRiver.emit(int(c))
-                self.notifyEquityRiver.emit(self.cal.equity(self.gui.ui.spinBox.value(), 5))
-#            if len(self.cal.cards[0]) == 2 and len(self.cal.cards[1]) >= 3:
-#                a, b, c = self.cal.evaluate()
-#                self.cal.calculate()
-#                self.gui.ui.labelCombi.setText("Player 1 hand rank = %d (%s)\n" % (
-#                self.cal.p_score, self.cal.eval.evaluator.class_to_string(self.cal.p_class)))
-#                self.gui.ui.labelInfo.setText("Player 1 hand rank = %d (%s) %f" % (a, b, c))
-            self.i += 1
-            self.notifyProgress.emit(self.i % 100)
+
+                self.notifyOddsRiver.emit(int(c / n))
+                self.notifyProgress.emit(90)
+                self.notifyOddsRiverP.emit(float(c / n))
+                if len(self.cal.cards[1]) >= 3:
+                    self.cal.evaluate()
+                    self.gui.ui.labelCombi.setText("Player 1 hand rank = %d (%s)\n" % (
+                    self.cal.my_score, self.cal.my_class))
+                    self.gui.ui.labelInfo.setText(str(n))
+                else:
+                    self.reset_ui()
+                self.notifyProgress.emit(100)
+                self.sleep(1)
 
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         QtWidgets.QMainWindow.__init__(self, parent, flags=QtCore.Qt.FramelessWindowHint)
         self.m_titleBar = TitleBar(self, "PokerStats")
+        self.m_content = QtWidgets.QWidget(self)
         self.m_content = QtWidgets.QWidget(self)
         self.size = []
         self.size.append(380)
@@ -153,6 +171,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loopthread.notifyEquityFlop.connect(self.onEquityFlop)
         self.loopthread.notifyEquityTurn.connect(self.onEquityTurn)
         self.loopthread.notifyEquityRiver.connect(self.onEquityRiver)
+        self.loopthread.notifyOddsFlopP.connect(self.onOddsFlopP)
+        self.loopthread.notifyOddsTurnP.connect(self.onOddsTurnP)
+        self.loopthread.notifyOddsRiverP.connect(self.onOddsRiverP)
         self.loopthread.start()
 
     def onProgress(self, i):
@@ -199,6 +220,15 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.ui.progressBar_3.setEnabled(True)
         self.ui.progressBar_6.setValue(a)
+
+    def onOddsFlopP(self, a):
+        self.ui.labelOddsFlopP.setText(str(round(a, 3)) + '%')
+
+    def onOddsTurnP(self, a):
+        self.ui.labelOddsTurnP.setText(str(round(a, 3)) + '%')
+
+    def onOddsRiverP(self, a):
+        self.ui.labelOddsRiverP.setText(str(round(a, 3)) + '%')
 
     def reset(self):
         self.ui.progressBar.setValue(0)

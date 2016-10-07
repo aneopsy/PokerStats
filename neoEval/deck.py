@@ -2,20 +2,19 @@ from random import shuffle
 from .card import Card
 
 class Deck:
-    """
-    Class representing a deck. The first time we create, we seed the static 
-    deck with the list of unique card integers. Each object instantiated simply
-    makes a copy of this object and shuffles it. 
-    """
-    _FULL_DECK = []
+
+    _DECK = []
 
     def __init__(self):
+        self.cards = []
         self.shuffle()
 
     def shuffle(self):
-        # and then shuffle
-        self.cards = Deck.GetFullDeck()
+        self.cards = self.get_full_deck()
         shuffle(self.cards)
+
+    def get_cards(self):
+        return list(self.cards)
 
     def draw(self, n=1):
         if n == 1:
@@ -26,24 +25,38 @@ class Deck:
             cards.append(self.draw())
         return cards
 
+    @staticmethod
+    def convert_card_to_string(deck):
+        cards = []
+        for i in deck:
+            cards.append(i.string)
+        return cards
+
     def remove(self, deck):
+        #self.cards.pop([i for i, j in enumerate(self.cards) if j.string == rm])
         for rm in deck:
             for i, o in enumerate(self.cards):
                 if o.string == rm.string:
                     del self.cards[i]
                     break
 
+    def delete(self, deck):
+        #self.cards.pop([i for i, j in enumerate(self.cards) if j.string == rm])
+        for i, o in enumerate(self.cards):
+            if o.string == rm.string:
+                del self.cards[i]
+                break
+
     def __str__(self):
         return Card.print_pretty_cards(self.cards)
 
-    @staticmethod
-    def GetFullDeck():
-        if Deck._FULL_DECK:
-            return list(Deck._FULL_DECK)
+    def get_full_deck(self):
+        if Deck._DECK:
+            return list(Deck._DECK)
+        return list(Deck.set_full_deck())
 
-        # create the standard 52 card deck
-        for rank in Card.STR_RANKS:
-            for suit,val in Card.CHAR_SUIT_TO_INT_SUIT.items():
-                Deck._FULL_DECK.append(Card(rank + suit))
+    def set_full_deck():
 
-        return list(Deck._FULL_DECK)
+        [Deck._DECK.append(Card(x + y)) for x in Card.STR_RANKS for y, a in Card.CHAR_SUIT_TO_INT_SUIT.items()]
+
+        return Deck._DECK

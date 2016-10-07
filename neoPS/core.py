@@ -1,6 +1,12 @@
-class PokerStars(object):
+import os
+import time
+from threading import Thread
+
+
+class PokerStars(Thread):
 
     def __init__(self, file_path):
+        Thread.__init__(self)
         self.file_path = file_path
         self.value_converter = {
             2: '2',
@@ -26,6 +32,37 @@ class PokerStars(object):
         self.nbrPlayersTmp = 0
         self.dealerFlag = False
         self.action = None
+        self.reset = 0
+        self.up = False
+
+    def card_converter(self, card):
+        suit = card[-1]
+        rank = int(card[:-1])
+        rank_converted = self.value_converter[rank]
+        return str(rank_converted + suit)
+
+    def stream(self):
+        current = open(self.file_path, "r")
+        curino = os.fstat(current.fileno()).st_ino
+        while True:
+            while True:
+                file = current.readline()
+                if not file:
+                    self.up = False
+                    break
+                yield file
+
+            try:
+                if os.stat(self.file_path).st_ino != curino:
+                    new = open(self.file_path, "r")
+                    current.close()
+                    current = new
+                    curino = os.fstat(current.fileno()).st_ino
+                    self.up = False
+                    continue
+            except IOError:
+                pass
+            time.sleep(1)
 
     def reset_info(self):
         self.boardCardList = [None, None, None, None, None]
@@ -35,56 +72,57 @@ class PokerStars(object):
         self.nbrPlayers = 0
         self.nbrPlayersTmp = 0
 
-    def get_info(self):
-        self.get_log()
-        for line in self.file:
+    def run(self):
+        for line in self.stream():
             if 'Game #' in line:
                 self.reset_info()
-            if 'OnTableData() round' in line:
-                    self.round = int(line.split(' ')[2])
-            if 'USR ACT box' in line:
-                self.action = line.split('\'')[1]
-            if 'maxTablePlayers' in line:
-                self.maxTablePlayers = int(line.split('=')[1])
-            if 'dealerPos=' in line:
-                if self.nbrPlayersTmp != 0:
-                    self.nbrPlayers = self.nbrPlayersTmp
-                self.nbrPlayersTmp = 0
-            if 'sit' in line:
-                self.nbrPlayersTmp += 1
+                self.up = True
+                continue
 
-    def get_log(self):
-        with open(self.file_path, 'r') as fd_file:
-            self.file = fd_file.readlines()
-        fd_file.close()
-        return self.file
-
-    def get_my_card(self):
-        self.get_log()
-        for line in self.file:
-            if 'Game #' in line:
-                self.handCardList = [None, None]
             if 'UpdateMyCard' in line:
                 id = int(line.split(' ')[1].split(':')[0])
                 if line.split(' ')[2][0] is not '0':
                     self.handCardList[id] = self.card_converter(line.split(' ')[2])
-        return self.handCardList
+                    self.up = True
+                continue
 
-    def get_player_card(self):
-        self.get_log()
-        for line in self.file:
-            if 'Game #' in line:
-                self.boardCardList = [None, None, None, None, None]
+            if 'OnTableData() round' in line:
+                self.round = int(line.split(' ')[2])
+                self.up = True
+                continue
+
+            if 'USR ACT box' in line:
+                self.action = line.split('\'')[1]
+                self.up = True
+                continue
+
+            if 'maxTablePlayers' in line:
+                self.maxTablePlayers = int(line.split('=')[1])
+                self.up = True
+                continue
+
+            if 'dealerPos=' in line:
+                if self.nbrPlayersTmp != 0:
+                    self.nbrPlayers = self.nbrPlayersTmp
+                self.nbrPlayersTmp = 0
+                self.up = True
+                continue
+
+            if 'sit' in line:
+                self.nbrPlayersTmp += 1
+                self.up = True
+                continue
+
             if ':::TableViewImpl::updateBoard() ' in line:
                 id = int(line.split('(')[2].split(')')[0])
                 self.boardCardList[id] = self.card_converter(line.split(' ')[1])
-        return self.boardCardList
+                self.up = True
+                continue
 
-    def get_cards(self):
-        return self.get_my_card() + self.get_player_card()
-
-    def card_converter(self, card):
-        suit = card[-1]
-        rank = int(card[:-1])
-        rank_converted = self.value_converter[rank]
-        return str(rank_converted + suit)
+if __name__ == '__main__':
+    neo = PokerStars('C:\\Users\\theis_p\\AppData\\Local\\PokerStars.FR\\PokerStars.log.0')
+    neo.start()
+    while True:
+        if neo.up:
+            print(neo.handCardList)
+            print(neo.boardCardList)
