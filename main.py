@@ -1,11 +1,14 @@
 import sys
 import os
 import configparser
+import sys
 
-from neoEval import Card, MonteCarlo, Evaluator, Deck
-from neoPS import PokerStars
+from PyQt5 import QtGui
+from PyQt5 import QtCore
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import *
 
-from PyQt5.QtCore import QThread
+from neoEval import Card, Evaluator, Deck
 
 from UI.gui import Ui_MainWindow
 from UI.titleBar import TitleBar
@@ -18,14 +21,6 @@ try:
 except NameError:
     import sys
     app_root = os.path.dirname(os.path.abspath(sys.argv[0]))
-
-import sys
-from PyQt5 import QtGui
-from PyQt5 import QtCore
-from PyQt5 import QtWidgets
-
-from PyQt5.QtCore import *
-
 
 class LoopThread(QThread):
 
@@ -80,12 +75,14 @@ class LoopThread(QThread):
                     self.notifyOddsFlopP.emit(float(a / n))
                 else:
                     self.notifyOddsFlop.emit(0)
+                    self.notifyOddsFlopP.emit(0)
                 if len(self.cal.cards[1]) <= 4:
                     self.notifyOddsTurn.emit(int(b / n))
                     self.notifyProgress.emit(50)
                     self.notifyOddsTurnP.emit(float(b / n))
                 else:
                     self.notifyOddsTurn.emit(0)
+                    self.notifyOddsTurnP.emit(0)
 
                 self.notifyOddsRiver.emit(int(c / n))
                 self.notifyProgress.emit(90)
@@ -240,6 +237,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.labelBoardCard.setText('')
         self.ui.labelHandCard.setText('')
         self.ui.lcdNumberPlayer.display(0)
+        self.ui.labelOddsFlopP.setText('0%')
+        self.ui.labelOddsTurnP.setText('0%')
+        self.ui.labelOddsRiverP.setText('0%')
         self.cards = []
 
     def loadIni(self):

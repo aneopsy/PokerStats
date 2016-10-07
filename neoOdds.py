@@ -1,7 +1,7 @@
-from neoEval import Card, Evaluator, Deck, MonteCarlo
+from neoEval import Card, Evaluator, Deck
 from neoPS import PokerStars
 
-__version__ = '0.1'
+__version__ = '0.3'
 __author__ = 'AneoPsy'
 
 
@@ -10,7 +10,6 @@ class NeoOdds (object):
     def __init__(self):
         self.evaluator = Evaluator()
         self.deck = Deck()
-        self.mc = MonteCarlo()
         self.file = None
         self.cards = []
         self.my_class = None

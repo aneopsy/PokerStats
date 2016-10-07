@@ -554,16 +554,6 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
          <string>information</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="2" column="1">
-          <widget class="QLCDNumber" name="lcdNumberPlayer">
-           <property name="digitCount">
-            <number>2</number>
-           </property>
-           <property name="segmentStyle">
-            <enum>QLCDNumber::Flat</enum>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="0">
           <widget class="QLabel" name="labelHandCard">
            <property name="text">
@@ -571,13 +561,6 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="labelPlayerNumber">
-           <property name="text">
-            <string>Player:</string>
            </property>
           </widget>
          </item>
@@ -600,6 +583,27 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
             <set>Qt::AlignCenter</set>
            </property>
           </widget>
+         </item>
+         <item row="3" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <widget class="QLabel" name="labelPlayerNumber">
+             <property name="text">
+              <string>Player:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLCDNumber" name="lcdNumberPlayer">
+             <property name="digitCount">
+              <number>2</number>
+             </property>
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Flat</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
