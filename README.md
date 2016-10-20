@@ -11,8 +11,6 @@ PokerStats awesome Statistic for Texas Hold'em
 
 
 ## Examples
-- [sindresorhus/pageres](https://github.com/sindresorhus/pageres) - Project logo. Clear description of what the project does. Build badges. Demo screenshot. Simple install and usage sections. Includes an examples section with common uses.
-- [petkaantonov/bluebird](https://github.com/petkaantonov/bluebird) - Build badges. Clear description of what the project does. TOC for 
 
 ## Authors
 
